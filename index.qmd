@@ -134,10 +134,11 @@ line_chart <-
          y = `Cantril ladder score`,
          colour = Country)) +
   geom_line(aes(colour = Country)) +
+  geom_point() +
   scale_y_continuous(limits = c(0,10)) + 
   theme_minimal() 
 
-ggplotly(line_chart, tooltip = c("x", "y", "Country"))
+ggplotly(line_chart, tooltip = c("Country", "x", "y"))
 
 ```
 
