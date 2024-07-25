@@ -1,7 +1,7 @@
 ---
 title: "Self-reported life satisfaction, 2011 to 2023"
 subtitle: "Replicating the Our World in Data Grapher"
-author: "YOUR NAME HERE" # Remember to add your name!
+author: "Adrián Calvo Valderrama" # Remember to add your name!
 date: "24-07-2024"
 theme: united
 ---
@@ -45,6 +45,7 @@ The main life evaluation question asked in the poll is the Cantril Life Ladder q
 
 > “Please imagine a ladder, with steps numbered from 0 at the bottom to 10 at the top. The top of the ladder represents the best possible life for you and the bottom of the ladder represents the worst possible life for you. On which step of the ladder would you say you personally feel you stand at this time?”
 
+:::{.panel-tabset}
 
 ## 🔢 Table
 
@@ -57,7 +58,20 @@ The main life evaluation question asked in the poll is the Cantril Life Ladder q
 
 # Create table
 
-"WRITE_YOUR_CODE_HERE"
+table1 <- cantril %>% 
+  filter(Year %in% c(2011,2023)) %>% 
+  select(-Code) %>% 
+  pivot_wider(names_from = Year,
+              values_from = `Cantril ladder score`) %>% 
+  mutate(absolute_change = round(`2023`- `2011`,2)) %>% 
+  mutate(relative_change = round(absolute_change/`2011`, 2)) %>% 
+  mutate(relative_change = scales::percent(relative_change)) %>% 
+  rename("Absolute Change" = absolute_change) %>% 
+  rename("Relative Change" = relative_change)
+
+
+reactable(table1)
+
 ```
 
 
@@ -107,7 +121,24 @@ cantril %>%
 # Note that your chart will not have the ability to filter countries like the one on the Our World in Data page.
 
 # Create line chart
-"WRITE_YOUR_CODE_HERE"
+line_chart <- 
+  cantril %>% 
+  filter(Country %in% c("Spain", 
+                        "France", 
+                        "Finland", 
+                        "Denmark", 
+                        "Iceland", 
+                        "Mongolia", 
+                        "Uruguay")) %>% 
+  ggplot(aes(x = Year,
+         y = `Cantril ladder score`,
+         colour = Country)) +
+  geom_line(aes(colour = Country)) +
+  scale_y_continuous(limits = c(0,10)) + 
+  theme_minimal() 
+
+ggplotly(line_chart, tooltip = c("x", "y", "Country"))
+
 ```
 
 ## 📈 Advanced Chart
@@ -154,11 +185,13 @@ bscols(
 <!-- Custom javascript to set default values in the filter: -->
 <script>
 function filter_default() {
-  var default_countries = ["Norway", "Australia", "Germany", "Bolivia", "Colombia", "Bhutan"]; // Set default countries here
+  var default_countries = ["Spain", "France", "Finland", "Denmark", "Mongolia", "Iceland", "Uruguay"]; // Set default countries here
   document.getElementById("country_filter").getElementsByClassName("selectized")[0].selectize.setValue(default_countries, false);
 }
 window.onload = filter_default;
 </script>
+
+:::
 
 # {.unlisted}
 
